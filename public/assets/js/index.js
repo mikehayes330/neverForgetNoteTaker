@@ -7,16 +7,21 @@ const $noteList = $(".list-container .list-group");
 // activeNote is used to keep track of the note in the textarea
 let activeNote = {};
 
+
+
 // A function for getting all notes from the db
 const getNotes = () => {
+  
   return $.ajax({
     url: "/api/notes",
     method: "GET",
   });
+  console.log("done")
 };
 
 // A function for saving a note to the db
 const saveNote = (note) => {
+  // console.log(note);
   return $.ajax({
     url: "/api/notes",
     data: note,
@@ -36,7 +41,7 @@ const deleteNote = (id) => {
 const renderActiveNote = () => {
   $saveNoteBtn.hide();
 
-  if (activeNote.id) {
+  if (activeNote.title) {
     $noteTitle.attr("readonly", true);
     $noteText.attr("readonly", true);
     $noteTitle.val(activeNote.title);
@@ -55,7 +60,7 @@ const handleNoteSave = function () {
     title: $noteTitle.val(),
     text: $noteText.val(),
   };
-
+console.log(newNote)
   saveNote(newNote).then(() => {
     getAndRenderNotes();
     renderActiveNote();
@@ -69,11 +74,16 @@ const handleNoteDelete = function (event) {
 
   const note = $(this).parent(".list-group-item").data();
 
-  if (activeNote.id === note.id) {
+   console.log(note.title);
+
+  if (activeNote.title === note.title) {
     activeNote = {};
   }
-
-  deleteNote(note.id).then(() => {
+  let noteTitle = note.title
+  
+  let noSpaceNoteTitle = noteTitle.replace(/\s/g, '')
+  console.log(noSpaceNoteTitle)
+  deleteNote(noSpaceNoteTitle).then(() => {
     getAndRenderNotes();
     renderActiveNote();
   });
@@ -82,6 +92,8 @@ const handleNoteDelete = function (event) {
 // Sets the activeNote and displays it
 const handleNoteView = function () {
   activeNote = $(this).data();
+  console.log($(this).data());
+  
   renderActiveNote();
 };
 
@@ -149,3 +161,5 @@ $noteText.on("keyup", handleRenderSaveBtn);
 
 // Gets and renders the initial list of notes
 getAndRenderNotes();
+
+
